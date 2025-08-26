@@ -3,7 +3,7 @@ const express = require('express');
 const odbc = require('odbc');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // 连接字符串，建议密码用环境变量
 const connectionString = `Driver={ODBC Driver 18 for SQL Server};Server=tcp:sce.database.windows.net,1433;Database=sce_data;Uid=xingguangcuican;Pwd=${process.env.AZURE_SQL_PASSWORD};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;`;
