@@ -1,23 +1,31 @@
 // 引入依赖
 const express = require('express');
-const odbc = require('odbc');
+const sql = require('mssql');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// 连接字符串，建议密码用环境变量
-const connectionString = `Driver={ODBC Driver 18 for SQL Server};Server=tcp:sce.database.windows.net,1433;Database=sce_data;Uid=xingguangcuican;Pwd=${process.env.AZURE_SQL_PASSWORD};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;`;
+// mssql连接配置
+const config = {
+  user: 'xingguangcuican',
+  password: process.env.AZURE_SQL_PASSWORD,
+  server: 'sce.database.windows.net',
+  database: 'sce_data',
+  options: {
+    encrypt: true,
+    trustServerCertificate: false
+  }
+};
 
 app.get('/api/umasce', async (req, res) => {
-  let connection;
   try {
-    connection = await odbc.connect(connectionString);
-    const result = await connection.query('SELECT * FROM UmaSCE_Data');
-    res.json(result);
+    await sql.connect(config);
+    const result = await sql.query('SELECT * FROM UmaSCE_Data');
+    res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ error: err.message });
   } finally {
-    if (connection) await connection.close();
+    await sql.close();
   }
 });
 
